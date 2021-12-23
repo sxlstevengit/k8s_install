@@ -1,0 +1,40 @@
+[Unit]
+Description=Etcd Server
+After=network.target
+After=network-online.target
+Wants=network-online.target
+Documentation=https://github.com/coreos
+
+[Service]
+Type=notify
+WorkingDirectory=/var/lib/etcd/
+ExecStart=/data/server/k8s/bin/etcd \
+  --name=cdh-master.rongyi.com \
+  --listen-client-urls=https://192.168.10.73:2379,http://127.0.0.1:2379 \
+  --advertise-client-urls=https://192.168.10.73:2379 \
+  --data-dir=/var/lib/etcd \
+  --listen-peer-urls=https://192.168.10.73:2380 \
+  --initial-advertise-peer-urls=https://192.168.10.73:2380 \
+  --cert-file=/etc/kubernetes/ca/etcd/etcd.pem \
+  --key-file=/etc/kubernetes/ca/etcd/etcd-key.pem \
+  --peer-cert-file=/etc/kubernetes/ca/etcd/etcd.pem \
+  --peer-key-file=/etc/kubernetes/ca/etcd/etcd-key.pem \
+  --trusted-ca-file=/etc/kubernetes/ca/ca.pem \
+  --peer-trusted-ca-file=/etc/kubernetes/ca/ca.pem \
+  --peer-client-cert-auth \
+  --client-cert-auth \
+  --initial-cluster-token=etcd-cluster-0 \
+  --initial-cluster=cdh-master.rongyi.com=https://192.168.10.73:2380,cdh-slave.rongyi.com=https://192.168.10.74:2380,cdh-slave2.rongyi.com=https://192.168.10.77:2380 \
+  --initial-cluster-state=new \
+  --auto-compaction-mode=periodic \
+  --auto-compaction-retention=1 \
+  --max-request-bytes=33554432 \
+  --quota-backend-bytes=6442450944 \
+  --heartbeat-interval=250 \
+  --election-timeout=2000
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

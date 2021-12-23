@@ -1,0 +1,15 @@
+kind: KubeProxyConfiguration
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+bindAddress: 192.168.10.73
+clientConnection:
+  kubeconfig: "/etc/kubernetes/kube-proxy.kubeconfig"
+clusterCIDR: "172.20.0.0/16"
+conntrack:
+  maxPerCore: 32768
+  min: 131072
+  tcpCloseWaitTimeout: 1h0m0s
+  tcpEstablishedTimeout: 24h0m0s
+healthzBindAddress: 192.168.10.73:10256
+hostnameOverride: "cdh-master.rongyi.com"
+metricsBindAddress: 192.168.10.73:10249
+mode: "ipvs"

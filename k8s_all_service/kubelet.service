@@ -1,0 +1,27 @@
+[Unit]
+Description=Kubernetes Kubelet
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=containerd.service
+Requires=containerd.service
+
+[Service]
+WorkingDirectory=/var/lib/kubelet
+ExecStart=/data/server/k8s/bin/kubelet \
+  --config=/var/lib/kubelet/config.yaml \
+  --cni-bin-dir=/data/server/k8s/bin \
+  --cni-conf-dir=/etc/cni/net.d \
+  --container-runtime=remote \
+  --container-runtime-endpoint=unix:///run/containerd/containerd.sock \
+  --hostname-override=cdh-master.rongyi.com \
+  --image-pull-progress-deadline=5m \
+  --kubeconfig=/etc/kubernetes/kubelet.kubeconfig \
+  --network-plugin=cni \
+  --pod-infra-container-image=easzlab/pause-amd64:3.5 \
+  --root-dir=/var/lib/kubelet \
+  --fail-swap-on=false \
+  --v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

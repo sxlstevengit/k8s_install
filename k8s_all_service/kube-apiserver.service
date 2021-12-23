@@ -1,0 +1,57 @@
+[Unit]
+Description=Kubernetes API Server
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=network.target
+
+[Service]
+WorkingDirectory=/data/server/k8s/kube-apiserver 
+ExecStart=/data/server/k8s/bin/kube-apiserver \
+  --enable-admission-plugins=NamespaceLifecycle,NodeRestriction,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota \
+  --anonymous-auth=false \
+  --bind-address=192.168.10.73 \
+  --secure-port=6443 \
+  --advertise-address=192.168.10.73 \
+  --authorization-mode=Node,RBAC \
+  --runtime-config=api/all=true \
+  --enable-bootstrap-token-auth \
+  --service-cluster-ip-range=10.68.0.0/16 \
+  --token-auth-file=/etc/kubernetes/ca/kubernetes/token.csv \
+  --service-node-port-range=30000-32767 \
+  --tls-cert-file=/etc/kubernetes/ca/kubernetes/kubernetes.pem  \
+  --tls-private-key-file=/etc/kubernetes/ca/kubernetes/kubernetes-key.pem \
+  --client-ca-file=/etc/kubernetes/ca/ca.pem \
+  --kubelet-client-certificate=/etc/kubernetes/ca/kubernetes/kubernetes.pem \
+  --kubelet-client-key=/etc/kubernetes/ca/kubernetes/kubernetes-key.pem \
+  --service-account-key-file=/etc/kubernetes/ca/ca-key.pem \
+  --service-account-signing-key-file=/etc/kubernetes/ca/ca-key.pem  \
+  --service-account-issuer=https://kubernetes.default.svc.cluster.local \
+  --etcd-cafile=/etc/kubernetes/ca/ca.pem \
+  --etcd-certfile=/etc/kubernetes/ca/etcd/etcd.pem \
+  --etcd-keyfile=/etc/kubernetes/ca/etcd/etcd-key.pem \
+  --etcd-servers=https://192.168.10.73:2379,https://192.168.10.74:2379,https://192.168.10.77:2379 \
+  --enable-aggregator-routing=true \
+  --proxy-client-cert-file=/etc/kubernetes/ca/aggregator-proxy.pem \
+  --proxy-client-key-file=/etc/kubernetes/ca/aggregator-proxy-key.pem \
+  --requestheader-allowed-names=aggregator \
+  --requestheader-group-headers=X-Remote-Group \
+  --requestheader-username-headers=X-Remote-User \
+  --requestheader-extra-headers-prefix=X-Remote-Extra- \
+  --requestheader-client-ca-file=/etc/kubernetes/ca/ca.pem \
+  --allow-privileged=true \
+  --audit-log-maxage=30 \
+  --audit-log-maxbackup=3 \
+  --audit-log-maxsize=100 \
+  --audit-log-path=/var/log/kube-apiserver-audit.log \
+  --feature-gates=RemoveSelfLink=false \
+  --event-ttl=1h \
+  --alsologtostderr=true \
+  --logtostderr=false \
+  --log-dir=/var/log/kubernetes \
+  --v=2
+Restart=on-failure
+RestartSec=10
+Type=notify
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

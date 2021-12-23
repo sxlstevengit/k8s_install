@@ -1,0 +1,12 @@
+[Unit]
+Description=etcdkeeper service
+After=network.target
+[Service]
+Type=simple
+ExecStart=/usr/local/etcdkeeper/etcdkeeper -h 192.168.10.73 -p 8800  #监听ip和端口自定义 不要跟k8s组件的端口冲突
+ExecReload=/bin/kill -HUP $MAINPID  
+KillMode=process
+Restart=on-failure
+PrivateTmp=true
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,20 @@
+{
+  "CN": "system:node:cdh-slave2.rongyi.com",
+  "hosts": [
+    "127.0.0.1",
+    "cdh-slave2.rongyi.com"
+  ],
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "CN",
+      "ST": "ShangHai",
+      "L": "SH",
+      "O": "system:nodes",
+      "OU": "System"
+    }
+  ]
+}

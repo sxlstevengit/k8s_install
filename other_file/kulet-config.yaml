@@ -1,0 +1,63 @@
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+address: 192.168.10.73
+authentication:
+  anonymous:
+    enabled: false
+  webhook:
+    cacheTTL: 2m0s
+    enabled: true
+  x509:
+    clientCAFile: /etc/kubernetes/ca/ca.pem
+authorization:
+  mode: Webhook
+  webhook:
+    cacheAuthorizedTTL: 5m0s
+    cacheUnauthorizedTTL: 30s
+cgroupDriver: systemd 
+cgroupsPerQOS: true
+clusterDNS:
+- 10.68.0.2
+clusterDomain: cluster.local
+configMapAndSecretChangeDetectionStrategy: Watch
+containerLogMaxFiles: 3 
+containerLogMaxSize: 10Mi
+enforceNodeAllocatable:
+- pods
+eventBurst: 10
+eventRecordQPS: 5
+evictionHard:
+  imagefs.available: 15%
+  memory.available: 300Mi
+  nodefs.available: 10%
+  nodefs.inodesFree: 5%
+evictionPressureTransitionPeriod: 5m0s
+failSwapOn: true
+fileCheckFrequency: 40s
+hairpinMode: hairpin-veth 
+healthzBindAddress: 192.168.10.73
+healthzPort: 10248
+httpCheckFrequency: 40s
+imageGCHighThresholdPercent: 85
+imageGCLowThresholdPercent: 80
+imageMinimumGCAge: 2m0s
+kubeAPIBurst: 100
+kubeAPIQPS: 50
+makeIPTablesUtilChains: true
+maxOpenFiles: 1000000
+maxPods: 110
+nodeLeaseDurationSeconds: 40
+nodeStatusReportFrequency: 1m0s
+nodeStatusUpdateFrequency: 10s
+oomScoreAdj: -999
+podPidsLimit: -1
+port: 10250
+# disable readOnlyPort 
+readOnlyPort: 0
+resolvConf: /etc/resolv.conf
+runtimeRequestTimeout: 2m0s
+serializeImagePulls: true
+streamingConnectionIdleTimeout: 4h0m0s
+syncFrequency: 1m0s
+tlsCertFile: /etc/kubernetes/ca/kubelet.pem
+tlsPrivateKeyFile: /etc/kubernetes/ca/kubelet-key.pem
