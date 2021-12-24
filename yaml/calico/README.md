@@ -1,10 +1,10 @@
 k8s中安装calico要点
----
+====
 
 
 说明：
 ----
-calico存储方式有两种： "datastore_type": "kubernetes"  和 etcd, 版本： node:v3.21.2版本，  K8s版本：v1.20.8
+calico存储方式有两种： "datastore_type": "kubernetes"  和 etcd. 版本： node:v3.21.2版本，  K8s版本：v1.20.8
 官网都有详细介绍：官方推荐是"datastore_type": "kubernetes"的方式，还要注意calico版本和k8s版本的兼容性，官方文档上有详细介绍
 
 文件介绍：
@@ -19,16 +19,17 @@ calico存储方式有两种： "datastore_type": "kubernetes"  和 etcd, 版本�
 ## kubernetes的方式，注意修改几个地方，才能正常运行：
 
 
-CALICO_IPV4POOL_CIDR： pod的网段，改成自己的。
-"kubeconfig": "__KUBECONFIG_FILEPATH__"： 改成自己主机上实际的路径. 如： "kubeconfig": "/etc/cni/net.d/calico-kubeconfig"
+CALICO_IPV4POOL_CIDR： pod的网段，改成自己的. <br>
+"kubeconfig": "__KUBECONFIG_FILEPATH__"： 改成自己主机上实际的路径. 如： "kubeconfig": "/etc/cni/net.d/calico-kubeconfig"  <br>
 
-由于calico是自动检查主机的IP地址的，它不能正确识别那个是主机的出口网卡，造成的，可以采用下面的方式来直接指定。
+由于calico是自动检查主机的IP地址的，它不能正确识别那个是主机的出口网卡造成的，可以采用下面的方式来直接指定。<br>
 
-calico会从部署节点路由中获取到达目的ip或者域名的源ip地址
+calico会从部署节点路由中获取到达目的ip或者域名的源ip地址 <br>
+
 - name: IP_AUTODETECTION_METHOD
   value: "can-reach=192.168.10.73"
 
-# Using domain names
+#Using domain names
 IP_AUTODETECTION_METHOD=can-reach=www.google.com
 IP6_AUTODETECTION_METHOD=can-reach=www.google.com
 
