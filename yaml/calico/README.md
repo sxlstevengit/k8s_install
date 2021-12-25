@@ -5,7 +5,7 @@ k8s中安装calico要点
 说明：
 ----
 calico存储方式有两种： "datastore_type": "kubernetes"  和 etcd.  <br>
-我的k8s版本： node:v3.21.2版本，  K8s版本：v1.20.8  <br>  
+我的k8s版本： node:v3.21.2版本，  K8s版本：v1.20.8  <br>
 官网都有详细介绍：官方推荐是"datastore_type": "kubernetes"的方式，还要注意calico版本和k8s版本的兼容性，官方文档上有详细介绍  <br>
 
 文件介绍：
@@ -20,15 +20,15 @@ calico存储方式有两种： "datastore_type": "kubernetes"  和 etcd.  <br>
 ## kubernetes的方式，注意修改几个地方，才能正常运行：
 
 
-CALICO_IPV4POOL_CIDR： pod的网段，改成自己的. <br>
-"kubeconfig": "__KUBECONFIG_FILEPATH__"： 改成自己主机上实际的路径. 如： "kubeconfig": "/etc/cni/net.d/calico-kubeconfig"  <br>
+`CALICO_IPV4POOL_CIDR： pod的网段，改成自己的. `  <br>
+`"kubeconfig": "__KUBECONFIG_FILEPATH__"： 改成自己主机上实际的路径. 如： "kubeconfig": "/etc/cni/net.d/calico-kubeconfig"  `
 
 由于calico是自动检查主机的IP地址的，它不能正确识别那个是主机的出口网卡造成的，可以采用下面的方式来直接指定。<br>
 
 calico会从部署节点路由中获取到达目的ip或者域名的源ip地址 <br>
-
-- name: IP_AUTODETECTION_METHOD     <br>
-  value: "can-reach=192.168.10.73"  <br>
+```
+name: IP_AUTODETECTION_METHOD     <br>
+value: "can-reach=192.168.10.73"  <br>
 
 #Using domain names
 IP_AUTODETECTION_METHOD=can-reach=www.google.com
@@ -53,13 +53,13 @@ bird: direct1: State changed to up
 bird: Mesh_172_18_0_1: Received: Connection rejected
 bird: Mesh_172_18_0_1: Received: Connection rejected
 bird: Mesh_172_18_0_1: Received: Connection rejected
-
+```
 
 可以看出容器初始化时用了三个容器，分别是upgrade-ipam、install-cni和flexvol-driver.其中upgrade-ipam容器的作用是查看是否有/var/lib/cni/networks/k8s-pod-network数据，如果有就把本地的ipam数据迁移到Calico-ipam；install-cni是cni-plugin项目里编译出来的一个二进制文件，用来拷贝二进制文件到各个主机的/opt/cni/bin下面的，并生成calico配置文件拷贝到/etc/cni/net.d下面；flexvol-driver使用的镜像是pod2daemon-flexvol，它的作用是 Adds a Flex Volume Driver that creates a per-pod Unix Domain Socket to allow Dikastes to communicate with Felix over the Policy Sync API.如果容器初试化错误，查看calico-node看不出问题，但可以通过查看这三个容器的log来分析，
 
 
 ## etcd方式
-生成密钥，过程省略,参考cfssl命令使用。注意虽然官方文件中，写的是etcd证书，但是我是用CA签发的证书calico证书，此处用calico证书。
+生成密钥，过程省略,参考cfssl命令使用。注意虽然官方文件中，写的是etcd证书，但是我是用CA签发的calico证书，此处用calico证书。
 * cat calico.pem | base64 -w 0 > etcd-cert
 * cat calico-key.pem | base64 -w 0 > etcd-key
 * cat ca.pem | base64 -w 0 > etcd-ca
@@ -69,10 +69,13 @@ bird: Mesh_172_18_0_1: Received: Connection rejected
 calico-etcd-secrets是secret的方式；也可以手动直接生成secret
 
 手动生成命令：
+```
 kubectl create secret generic -n kube-system calico-etcd-secrets \
 --from-file=etcd-ca=ca.pem \
 --from-file=etcd-key=calico-key.pem \
 --from-file=etcd-cert=calico.pem
+```
+
 
 ```
 ---
@@ -155,9 +158,10 @@ data:
 
 
 IP自动检测
+```
 name: IP_AUTODETECTION_METHOD
 value: "can-reach=192.168.111.129"
-
+```
 
 
 参考：
