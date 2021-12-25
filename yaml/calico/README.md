@@ -4,8 +4,9 @@ k8s中安装calico要点
 
 说明：
 ----
-calico存储方式有两种： "datastore_type": "kubernetes"  和 etcd. 版本： node:v3.21.2版本，  K8s版本：v1.20.8
-官网都有详细介绍：官方推荐是"datastore_type": "kubernetes"的方式，还要注意calico版本和k8s版本的兼容性，官方文档上有详细介绍
+calico存储方式有两种： "datastore_type": "kubernetes"  和 etcd.  <br>
+我的k8s版本： node:v3.21.2版本，  K8s版本：v1.20.8  <br>  
+官网都有详细介绍：官方推荐是"datastore_type": "kubernetes"的方式，还要注意calico版本和k8s版本的兼容性，官方文档上有详细介绍  <br>
 
 文件介绍：
 * calico-datastore-k8s.yaml.official   官方版calico存储方式为k8s
@@ -26,8 +27,8 @@ CALICO_IPV4POOL_CIDR： pod的网段，改成自己的. <br>
 
 calico会从部署节点路由中获取到达目的ip或者域名的源ip地址 <br>
 
-- name: IP_AUTODETECTION_METHOD
-  value: "can-reach=192.168.10.73"
+- name: IP_AUTODETECTION_METHOD     <br>
+  value: "can-reach=192.168.10.73"  <br>
 
 #Using domain names
 IP_AUTODETECTION_METHOD=can-reach=www.google.com
@@ -73,10 +74,11 @@ kubectl create secret generic -n kube-system calico-etcd-secrets \
 --from-file=etcd-key=calico-key.pem \
 --from-file=etcd-cert=calico.pem
 
+```
 ---
-# Source: calico/templates/calico-etcd-secrets.yaml
-# The following contains k8s Secrets for use with a TLS enabled etcd cluster.
-# For information on populating Secrets, see http://kubernetes.io/docs/user-guide/secrets/
+#Source: calico/templates/calico-etcd-secrets.yaml
+#The following contains k8s Secrets for use with a TLS enabled etcd cluster.
+#For information on populating Secrets, see http://kubernetes.io/docs/user-guide/secrets/
 apiVersion: v1
 kind: Secret
 type: Opaque
@@ -93,23 +95,23 @@ data:
   etcd-cert: 填写上面的加密字符串
   etcd-ca: 填写上面的加密字符串
 ..........
-# Datastore: etcd, using Typha is redundant and not recommended.
-# Kubeasz uses cmd-line-way( kubectl create) to create etcd-secrets, see more in 'roles/calico/tasks/main.yml'
+#Datastore: etcd, using Typha is redundant and not recommended.
+#Kubeasz uses cmd-line-way( kubectl create) to create etcd-secrets, see more in 'roles/calico/tasks/main.yml'
 
 
-# Source: calico/templates/calico-config.yaml
-# This ConfigMap is used to configure a self-hosted Calico installation.
+#Source: calico/templates/calico-config.yaml
+#This ConfigMap is used to configure a self-hosted Calico installation.
 kind: ConfigMap
 apiVersion: v1
 metadata:
   name: calico-config
   namespace: kube-system
 data:
-  # Configure this with the location of your etcd cluster.
+  #Configure this with the location of your etcd cluster.
   etcd_endpoints: "https://192.168.10.73:2379,https://192.168.10.74:2379,https://192.168.10.77:2379"
   #etcd_endpoints: "https://192.168.10.73:2379"
-  # If you're using TLS enabled etcd uncomment the following.
-  # You must also populate the Secret below with these files.
+  #If you're using TLS enabled etcd uncomment the following.
+  #You must also populate the Secret below with these files.
   etcd_ca: "/calico-secrets/etcd-ca"   #这三个值不需要修改
   etcd_cert: "/calico-secrets/etcd-cert" #这三个值不需要修改
   etcd_key: "/calico-secrets/etcd-key"   #这三个值不需要修改
@@ -149,6 +151,7 @@ data:
         }
       ]
     }
+```
 
 
 IP自动检测
