@@ -92,3 +92,16 @@ kubectl config use-context kubernetes
 ```
 
 备注：***使用kubectl config 生成kubeconfig 自动保存到 ~/.kube/config，生成后 cat ~/.kube/config可以验证配置文件包含 kube-apiserver 地址、证书、用户名等信息。***
+
+
+## 关于k8s组件启动文件的使用，以kube-apiserver举例
+
+##### 复制文件到启动文件目录
+cp kube-apiserver.service /lib/systemd/system/kube-apiserver.service
+
+##### 启动服务
+systemctl enable kube-apiserver
+systemctl start kube-apiserver
+
+##### 查看日志
+journalctl -f -u kube-apiserver
