@@ -160,3 +160,10 @@ nginx-ingress     <none>   nginx.abc.com      10.68.10.152   80      87m
 <h1>Welcome to my webwite </h1>
 <h2>I am version 2.0，欢迎使用</h2>
 ```
+
+## 遇到的问题
+1. ingress-nginx文件中的镜像需要翻墙下载，官方原文件中镜像版本号后面的哈希值删除，不然会一直下载镜像。我已经修改过，如下：
+`k8s.gcr.io/ingress-nginx/controller:v1.1.0@sha256:f766669fdcf3dc26347ed273a55e754b427eb4411ee075a53f30718b4499076a`
+
+2. ingress-nginx中修改ingress-nginx-controller的Service的类型：
+  `由#type: LoadBalancer 改成 type: NodePort`
