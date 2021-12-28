@@ -46,6 +46,7 @@ ingress contronler通过与k8s的api进行交互，动态的去感知k8s集群�
 ## 部署
 
 **安装**
+
 `kubectl apply -f ingress-nginx.yaml`
 
 **查看**
@@ -119,6 +120,7 @@ spec:
 ```
 
 **创建ingress**
+
 `kubectl apply -f ingress.yaml `
 
 ingress.yaml内容如下：
@@ -149,6 +151,7 @@ nginx-ingress     <none>   nginx.abc.com      10.68.10.152   80      87m
 ```
 
 **访问**
+
 在客户端主机也可以通过修改本机 hosts 文件，如上例子，增加记录：
 192.168.10.73	nginx.abc.com
 
