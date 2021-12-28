@@ -1,0 +1,16 @@
+﻿apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx # 很重要，这样才能被ingress-controller识别。
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+    - host: nginx.abc.com
+      http:
+        paths:
+         - path: /
+           backend:
+             serviceName: myapp
+             servicePort: 80
