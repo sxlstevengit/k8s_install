@@ -144,6 +144,31 @@ spec:
 
 ```
 
+*注意各apiversion版本中ingress的写法的区别*
+
+```
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana-ingress-new
+  namespace: monitoring
+  annotations:
+    kubernetes.io/ingress.class: nginx # 很重要，这样才能被ingress-controller识别。
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  rules:
+  - host: grafana-new.rongyi.com
+    http:
+      paths:
+      - path: /
+        backend:
+          service:
+            name: grafana
+            port:
+              number: 3000
+        pathType: ImplementationSpecific
+```
+
 **查看**
 ```
 [root@cdh-master ingress-nginx]# kubectl get ingress | grep nginx.abc.com
