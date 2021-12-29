@@ -31,17 +31,25 @@ kubectl create -f manifests/
 
 **开启端口转发，这种方式只能临时访问。推荐的方式是通过ingress的方式通过域名访问**
 **另外端口转发也可以直接修改清单文件**
+
 prometheus
+
 `kubectl --namespace monitoring port-forward --address 0.0.0.0 svc/prometheus-k8s 9090`
+
 alertmanager
+
 `kubectl --namespace monitoring port-forward --address 0.0.0.0 svc/alertmanager-main 9093`
+
 grafana
+
 `kubectl --namespace monitoring port-forward --address 0.0.0.0 svc/grafana 3000`
 
 浏览器直接访问
+```
 http://192.168.10.73:9090
 http://192.168.10.73:9093
 http://192.168.10.73:3000
+```
 
 
 ## 卸载
