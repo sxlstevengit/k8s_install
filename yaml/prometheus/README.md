@@ -3,7 +3,9 @@
 随着heapster项目停止更新并慢慢被metrics-server取代，集群监控这项任务也将最终转移。prometheus的监控理念、数据结构设计其实相当精简，包括其非常灵活的查询语言；但是对于初学者来说，想要在k8s集群中实践搭建一套相对可用的部署却比较麻烦，由此还产生了不少专门的项目（如：[prometheus-operator](https://github.com/coreos/prometheus-operator)）；还有[kube-prometheus](https://github.com/prometheus-operator/kube-prometheus),它集成了前面的prometheus-operator。本文介绍使用kube-prometheus部署集群的prometheus监控。
 
 参考链接:
+
 https://github.com/prometheus-operator/kube-prometheus
+
 https://prometheus-operator.dev/docs/prologue/quick-start/
 
 
