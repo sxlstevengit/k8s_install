@@ -23,13 +23,15 @@ main         |   |   |   | OK  |  OK
 
 
 ## 安装
-
+```
 kubectl create -f manifests/setup
 kubectl create -f manifests/
+```
 
 ## 访问
 
 **开启端口转发，这种方式只能临时访问。推荐的方式是通过ingress的方式通过域名访问**
+
 **另外端口转发也可以直接修改清单文件**
 
 prometheus
