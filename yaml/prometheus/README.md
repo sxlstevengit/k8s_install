@@ -15,7 +15,7 @@ https://prometheus-operator.dev/docs/prologue/quick-start/
 
 kube-prometheus版本 | k8s 1.19 | k8s 1.20 | k8s 1.21 |k8s 1.22|k8s 1.23
 ------------------ | ----------|--------- |----------|--------|--------
-release-0.7  |  OK |   |  OK |   |
+release-0.7  |  OK | OK  |   |   |
 release-0.8  |   |  OK | OK  |   |
 release-0.9  |   |   | OK  |OK   |
 release-0.10 |   |   |   | OK  |  OK
