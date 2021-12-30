@@ -1,0 +1,137 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: buorg-main-svc
+  namespace: prod
+spec:
+  selector:
+    ns: prod
+    app: buorg-main
+  ports:
+  - name: httpport
+    targetPort: 8090
+    port: 8090
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: buorg-main-dm
+  namespace: prod
+  annotations:
+    motive: "mirgation"
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      ns: prod
+      app: buorg-main
+  template:
+    metadata:
+      labels:
+        ns: prod
+        app: buorg-main
+        createdt: "20211011"
+        team: "unknown"
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8090"
+        prometheus.io/path: "/actuator/prometheus"
+    spec:
+      volumes:
+      - name: servers
+        emptyDir: {}
+      - name: skywalking
+        hostPath: 
+          path: /data/apps/skywalking
+          type: Directory
+      - name: buorg-main-apps
+        hostPath:
+          path: /data/apps/buorg-main
+          type: Directory
+      - name: logs
+        hostPath:
+          path: /opt/logs/apps/buorg-main
+          type: DirectoryOrCreate
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "app"
+                    operator: In
+                    values:
+                      - "buorg-main"
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+      - name: buorg-main
+        image: repo.abc.com/base/buorg-main:1.2.16
+        volumeMounts:
+        - name: logs
+          mountPath: /opt/logs/apps/buorg-main
+        - name: servers
+          mountPath: /data/servers
+        - name: buorg-main-apps
+          mountPath: /data/apps/buorg-main
+        - name: skywalking
+          mountPath: /data/apps/skywalking
+        command: ["/bin/sh","-c"]
+        args:
+        - test ! -d /opt/logs/apps/$APPNAME && mkdir -p /opt/logs/apps/$APPNAME ; cd /opt/logs/apps/$APPNAME ;
+          test -f /data/apps/$APPNAME/${APPNAME}.jar && mkdir -p /data/servers/$APPNAME/ && /bin/cp -f /data/apps/$APPNAME/${APPNAME}.jar /data/servers/$APPNAME/${APPNAME}.jar  && exec /usr/local/jdk1.8.0_201/bin/java $JVMOPT -jar /data/servers/$APPNAME/${APPNAME}.jar --nacos.server-addr=nacos.prod.svc.cluster.local:8848 --nacos.namespace=123456-e650-417b-98bc-893e42a1fa4f --server.port=8090 >> ${APPNAME}.log 2>&1 || sleep 600
+        env:
+        - name: APPNAME
+          value: "buorg-main"
+        - name: JVMOPT
+          value: "-server -Xms2048m -Xmx2048m -XX:MaxNewSize=256m -Dfile.encoding=utf-8 -Djava.awt.headless=true  -Djava.awt.headless=true -javaagent:/data/apps/skywalking/skywalking-agent.jar -Dskywalking.agent.service_name=prod-buorg-main"
+        - name: MY_POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP        
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - sh
+              - -c
+              - curl -X POST http://${MY_POD_IP}:8090/actuator/offline
+        ports:
+        - name: httpport
+          containerPort: 8090
+        resources:
+          limits:
+            memory: 2060Mi
+          requests:
+            memory: 2060Mi
+        livenessProbe:
+          initialDelaySeconds: 10
+          failureThreshold: 1
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 10
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - curl -s 127.0.0.1:8090/buorg/monitor/health | awk -F, '{print $1}'|grep -i up 
+        readinessProbe:
+          initialDelaySeconds: 10
+          failureThreshold: 3
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 15
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - curl -s 127.0.0.1:8090/buorg/monitor/health | awk -F, '{print $1}'|grep -i up 
+        startupProbe:
+          initialDelaySeconds: 10
+          failureThreshold: 10
+          periodSeconds: 30
+          successThreshold: 1
+          timeoutSeconds: 15
+          exec:
+            command:
+            - /bin/sh
+            - -c
+            - curl -s 127.0.0.1:8090/buorg/monitor/health | awk -F, '{print $1}'|grep -i up 
