@@ -35,9 +35,11 @@ kubernetes 系统各组件需要使用 TLS 证书对通信进行加密，使用 
 ### certificate_json文件的使用
 
 - 创建 CA 证书
+
 ```cfssl gencert -initca ca-csr.json | cfssljson -bare ca```
 
 - 使用CA证书签发kube-apiserer证书
+
 ```cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=kubernetes kubernetes-csr.json | cfssljson -bare kubernetes```
 
 ### 生成kubeconfig文件，以kube-controller-manager举例
@@ -76,7 +78,7 @@ kubectl config set-context default \
 kubectl config use-context default --kubeconfig=kube-controller-manager.kubeconfig
 ```
 
-### 生成kubeconfig 配置文件,用于kubelet认证
+### 生成kubeconfig 配置文件,用于kubectl认证
 
 - 生成 admin 用户证书
 ```
