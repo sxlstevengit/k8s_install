@@ -1,0 +1,38 @@
+apiVersion: v1
+data:
+  myname: helloworld
+kind: ConfigMap
+metadata:
+  name: myconf
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-subpath
+spec:
+    nodeSelector:
+      kubernetes.io/hostname: cdh-master.rongyi.com
+    containers:
+    - name: busybox-subpath
+      image: busybox
+      command: ["/bin/sh","-c","sleep 3600"]
+      volumeMounts:
+      - mountPath: /home             # 容器1的挂载目录
+        name: subpath-test
+        subPath: busyboxtest                 
+    - name: nginx-subpath
+      image: nginx
+      volumeMounts:
+      - mountPath: /home             # 容器2的挂载目录
+        name: subpath-test
+        subPath: nginxtest           
+      - mountPath: /etc/nginx/myname # configMap的挂载 
+        name: myconf
+        subPath: myname                 
+    volumes:
+    - name: subpath-test
+      hostPath:
+        path: /data/subpath
+    - name: myconf  # configMap挂载的定义
+      configMap:
+        name: myconf
