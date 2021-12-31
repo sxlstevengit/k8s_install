@@ -441,7 +441,10 @@ lrwxrwxrwx 1 root root 13 Dec 31 02:35 myname -> ..data/myname
 
 **结论：**
 
-- 容器1和容器2都挂载了subpath-test[*具体路径是/data/subpath/*]这个目录，如果开启subPath，则会自动在subpath-test下面创建子目录，且相互隔离；如果关闭subPath，则整个subpath-test目录都会挂载到两个容器的/home目录，且两个容器看到的内容是一样的，修复之后，两个容器中的文件都会修改。
+- 容器1和容器2都挂载了subpath-test[*具体路径是/data/subpath/*]这个目录，如果开启subPath，则会自动在subpath-test下面创建子目录，且相互隔离；如果关闭subPath，则整个subpath-test目录都会挂载到两个容器的/home目录，且两个容器看到的内容是一样的，修改之后，两个容器中的文件都会修改。
 
 
-- configMap的挂载，开启subPath则会在/etc/nginx/目录下挂载myname的文件，myname的内容是: helloworld。 如果关闭，则会在/etc/nginx/生成myname目录，然后该目录下有myname文件，内容是helloworld。
+- configMap的挂载，开启subPath则会在/etc/nginx/目录下挂载myname的文件，myname的内容是: helloworld； 如果关闭，则会在/etc/nginx/生成myname目录，然后该目录下有myname文件，内容是helloworld。 如果容器中原来有myname目录且下面有文件，则会进行覆盖。
+
+
+***注意：在 ConfigMap 中使用 subPath 将影响ConfigMap内容变化时的自动更新。***
