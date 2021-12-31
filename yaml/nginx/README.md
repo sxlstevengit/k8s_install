@@ -253,13 +253,15 @@ volumes:
 ```
 
 ```
-网络设置
+网络设置.
 ...
 nodeSelector: # 节点选择
   kubernetes.io/hostname: cdh-slave.abc.com
 dnsPolicy: ClusterFirstWithHostNet # 如果使用主机网络，则启用。
 hostNetwork: true                  # 使用主机网络。
 ...
+此处dnsPolicy后面有详细介绍，我开始时并没有加这个选项，开启hostNetwork后,pod总也起不来。看日志Nginx无法解析svc名称。<br>
+开启hostNetwork后， hostPort也要注释掉。
 ```
 
 
@@ -358,3 +360,88 @@ https://kubernetes.io/docs/concepts/services-networking/dns-pod-service/#pod-s-d
 1、 1个pod中可以有多个容器，有时候希望将不同容器的路径挂载在存储卷volume的子路径，这个时候需要用到subpath
 
 2、volume支持将configMap/Secret挂载在容器的路径，但是会覆盖掉容器路径下原有的文件，如何支持选定configMap/Secret的每个key-value挂载在容器中，且不会覆盖掉原目录下的文件，这个时候也可以用到subpath
+
+一个测试案例yaml
+
+```
+apiVersion: v1
+data:
+  myname: helloworld
+kind: ConfigMap
+metadata:
+  name: myconf
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-subpath
+spec:
+    nodeSelector:
+      kubernetes.io/hostname: cdh-master.rongyi.com
+    containers:
+    - name: busybox-subpath
+      image: busybox
+      command: ["/bin/sh","-c","sleep 3600"]
+      volumeMounts:
+      - mountPath: /home             # 容器1的挂载目录
+        name: subpath-test
+        subPath: busyboxtest
+    - name: nginx-subpath
+      image: nginx
+      volumeMounts:
+      - mountPath: /home             # 容器2的挂载目录
+        name: subpath-test
+        subPath: nginxtest
+      - mountPath: /etc/nginx/myname # configMap的挂载
+        name: myconf
+        subPath: myname             #将key名称作为文件名，helloworld作为文件内容。
+    volumes:
+    - name: subpath-test
+      hostPath:
+        path: /data/subpath
+    - name: myconf  # configMap挂载的定义
+      configMap:
+        name: myconf
+
+```
+**查看**
+
+```
+[root@cdh-master ~]# ll  /data/subpath/
+total 4
+-rw-r--r-- 1 root root 23 Dec 30 18:35 1.txt
+drwxr-xr-x 2 root root 25 Dec 30 18:57 busyboxtest
+drwxr-xr-x 2 root root 23 Dec 30 18:58 nginxtest
+
+
+开启subPath查看configMap挂载
+
+root@pod-subpath:/etc/nginx# ls -l myname
+-rw-r--r-- 1 root root 10 Dec 31 03:25 myname
+
+
+关闭subPath查看configMap挂载
+
+root@pod-subpath:/etc/nginx# ls -l
+total 24
+drwxr-xr-x 1 root root   26 Dec 31 02:35 conf.d
+-rw-r--r-- 1 root root 1007 Dec 28 15:28 fastcgi_params
+-rw-r--r-- 1 root root 5349 Dec 28 15:28 mime.types
+lrwxrwxrwx 1 root root   22 Dec 28 15:40 modules -> /usr/lib/nginx/modules
+drwxrwxrwx 3 root root   73 Dec 31 02:35 myname
+-rw-r--r-- 1 root root  648 Dec 28 15:40 nginx.conf
+-rw-r--r-- 1 root root  636 Dec 28 15:28 scgi_params
+-rw-r--r-- 1 root root  664 Dec 28 15:28 uwsgi_params
+root@pod-subpath:/etc/nginx#
+root@pod-subpath:/etc/nginx#
+root@pod-subpath:/etc/nginx# ls -l myname/
+total 0
+lrwxrwxrwx 1 root root 13 Dec 31 02:35 myname -> ..data/myname
+```
+
+**结论：**
+
+- 容器1和容器2都挂载了subpath-test[*具体路径是/data/subpath/*]这个目录，如果开启subPath，则会自动在subpath-test下面创建子目录，且相互隔离；如果关闭subPath，则整个subpath-test目录都会挂载到两个容器的/home目录，且两个容器看到的内容是一样的，修复之后，两个容器中的文件都会修改。
+
+
+- configMap的挂载，开启subPath则会在/etc/nginx/目录下挂载myname的文件，myname的内容是: helloworld。 如果关闭，则会在/etc/nginx/生成myname目录，然后该目录下有myname文件，内容是helloworld。
