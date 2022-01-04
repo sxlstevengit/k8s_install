@@ -57,3 +57,47 @@ http://192.168.10.73:3000
 ## 卸载
 
 `kubectl delete --ignore-not-found=true -f manifests/ -f manifests/setup`
+
+
+## 配置钉钉告警
+
+- **创建钉钉群，获取群机器人 webhook 地址**
+
+使用钉钉创建群聊以后可以方便设置群机器人，【群设置】-【群机器人】-【添加】-【自定义】-【添加】，然后按提示操作即可。
+上述配置好群机器人，获得这个机器人对应的Webhook地址，记录下来，后续配置钉钉告警插件要用，格式如下：
+
+`https://oapi.dingtalk.com/robot/send?access_token=xxxxxxxx`
+
+
+- **创建钉钉告警插件**
+
+参考:
+
+http://theo.im/blog/2017/10/16/release-prometheus-alertmanager-webhook-for-dingtalk/
+
+https://github.com/timonwong/prometheus-webhook-dingtalk
+
+编辑修改dingtalk-webhook.yaml文件中 access_token=xxxxxx 为上一步你获得的机器人认证 token
+
+**安装插件**
+
+`kubectl apply -f dingtalk-webhook.yaml`
+
+- **修改 alertsmanager 告警配置,测试发送告警。**
+
+修改alertmanager-secret.yaml文件，添加如下内容：
+
+```
+"receivers":
+    - "name": "Default"
+    - "name": "Watchdog"
+    - "name": "Critical"
+    - "name": "dingtalk"
+      "webhook_configs":
+       - "send_resolved": false
+          "url": "http://webhook-dingtalk.monitoring.svc.cluster.local:8060/dingtalk/webhook1/send"
+```
+
+告警示例如下：
+
+![dingtalk](https://raw.githubusercontent.com/sxlstevengit/k8s_install/main/img/钉钉报警.png)
