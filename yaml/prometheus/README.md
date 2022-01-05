@@ -224,7 +224,7 @@ subsets:
 
 `curl 192.168.10.73:10254/metrics`
 
-**映射端口10254到宿主机上，需要修改ingress-nginx.yaml**
+- **映射端口10254到宿主机上，需要修改ingress-nginx.yaml**
 ```
 apiVersion: v1
 kind: Service
@@ -270,7 +270,7 @@ ports:
 ....
 ```
 
-**创建 servicemonitor配置让prometheus能发现ingress-nginx的metrics**
+- **创建 servicemonitor配置让prometheus能发现ingress-nginx的metrics**
 
 
 servicemonitor-ingress-nginx.yaml内容如下：
@@ -303,7 +303,8 @@ spec:
 
 ```
 
-创建
+创建并查看
+
 `kubectl apply -f  servicemonitor-ingress-nginx.yaml`
 
 ```
@@ -312,7 +313,7 @@ NAME                     AGE
 ingress-nginx-scraping   65m
 ```
 
-**指标一直没收集上来，看看proemtheus服务的日志，发现报错如下**
+- **指标一直没收集上来，看看proemtheus服务的日志，发现报错如下**
 
 ```
 level=error ts=2022-01-05T06:07:36.803Z caller=klog.go:96 component=k8s_client_runtime func=ErrorDepth msg="/app/discovery/kubernetes/kubernetes.go:427: Failed to watch *v1.Service: failed to list *v1.Service: services is forbidden: User \"system:serviceaccount:monitoring:prometheus-k8s\" cannot list resource \"services\" in API group \"\" in the namespace \"ingress-nginx\""
@@ -384,6 +385,7 @@ ingress-nginx/ingress-nginx-scraping/0 (1/1 up)
 **配置prometheus发现并监控etcd**
 
 - **把ETCD的证书创建为secret**
+
 `kubectl -n monitoring create secret generic etcd-certs --from-file=/etc/kubernetes/ca/etcd/etcd.pem   --from-file=/etc/kubernetes/ca/etcd/etcd-key.pem    --from-file=/etc/kubernetes/ca/ca.pem`
 
 
@@ -400,7 +402,7 @@ spec:
 
   保存退出后，prometheus会自动重启服务pod以加载这个secret配置，过一会，我们进pod来查看下是不是已经加载到ETCD的证书了
 
-  kubectl -n monitoring exec -it prometheus-k8s-0 -c prometheus  -- sh
+  #kubectl -n monitoring exec -it prometheus-k8s-0 -c prometheus  -- sh
   /prometheus $ ls /etc/prometheus/secrets/etcd-certs/
   ca.pem        etcd-key.pem  etcd.pem
 ```
