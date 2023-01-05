@@ -7,6 +7,8 @@ Requires=containerd.service
 [Service]
 WorkingDirectory=/var/lib/kubelet
 ExecStart=/data/server/k8s/bin/kubelet \
+  --bootstrap-kubeconfig=/etc/kubernetes/bootstrap.kubeconfig \  # 使其支持引导bootstrap Token
+  --cert-dir=/etc/kubernetes/ca \                                # 使其支持引导bootstrap Token
   --config=/var/lib/kubelet/config.yaml \
   --cni-bin-dir=/data/server/k8s/bin \
   --cni-conf-dir=/etc/cni/net.d \
