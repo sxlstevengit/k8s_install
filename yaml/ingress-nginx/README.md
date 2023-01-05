@@ -180,6 +180,8 @@ nginx-ingress     <none>   nginx.abc.com      10.68.10.152   80      87m
 在客户端主机也可以通过修改本机 hosts 文件，如上例子，增加记录：
 192.168.10.73	nginx.abc.com
 
+注意：绑定ingress-nginx-controller容器所在的主机
+
 *结果：*
 ```
 <h1>Welcome to my webwite </h1>
