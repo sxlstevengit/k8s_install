@@ -1,4 +1,4 @@
-关于k8s安装方式的介绍
+﻿关于k8s安装方式的介绍
 ===================
 
 ## kubernetes的安装有几种方式：
@@ -23,7 +23,7 @@
 
 ```shell
 -  先主节点containerd, etcd, kube-api-server , kube-controller-manager, kube-scheduler, calico,kubelet,kube-proxy
--  后工作节点kubelet,kube-proxy
+-  后工作节点containerd,kubelet,kube-proxy
 ```
 
 ### 遇到的问题：
