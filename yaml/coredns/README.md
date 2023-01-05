@@ -1,4 +1,4 @@
-## 集群DNS
+﻿## 集群DNS
 
 DNS 是 k8s 集群首要部署的组件，它为集群中的其他 pods 提供域名解析服务；主要可以解析 集群服务名 SVC 和 Pod hostname；目前建议部署 coredns。
 
@@ -8,6 +8,7 @@ DNS 是 k8s 集群首要部署的组件，它为集群中的其他 pods 提供�
 ### 验证 dns服务
 
 - 新建一个测试nginx服务
+
 `kubectl run nginx --image=nginx --expose --port=80`
 
 
@@ -21,6 +22,7 @@ service/nginx        ClusterIP   10.68.200.103   <none>        80/TCP    22s
 - 测试pod alpine
 
 kubectl run test --rm -it --image=alpine /bin/sh
+
 If you don't see a command prompt, try pressing enter.
 
 ```
