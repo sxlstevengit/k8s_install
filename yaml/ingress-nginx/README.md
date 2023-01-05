@@ -1,4 +1,4 @@
-## Ingress简介
+﻿## Ingress简介
 
 
  K8s集群对外暴露服务的方式目前只有三种：loadblancer、nodeport、ingress。前两种熟悉起来比较快，而且使用起来也比较方便，在此就不进行介绍了。
@@ -192,3 +192,8 @@ nginx-ingress     <none>   nginx.abc.com      10.68.10.152   80      87m
 
 2. ingress-nginx中修改ingress-nginx-controller的Service的类型：
   `由#type: LoadBalancer 改成 type: NodePort`
+
+3. ingress-nginx安装后一直Pending? 
+   ```由于nodeSelector设置，会选择kubernetes.io/ng: ingress-nginx标签的主机
+      kubectl label node master01 kubernetes.io/ng=ingress-nginx
+   ```
