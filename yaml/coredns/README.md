@@ -69,4 +69,4 @@ Address: 180.101.49.12
 
  `kubectl delete pod -n kube-system kube-dns-69bf9d5cc9-c68mw`
 
-2. 使用 kubectl run test -it --rm --image=busybox /bin/sh 进行解析测试可能会失败, busybox内的nslookup程序有bug, 详见 https://github.com/kubernetes/dns/issues/109
+2. 使用 kubectl run test -it --rm --image=busybox /bin/sh 进行解析测试可能会失败, busybox内的nslookup程序有bug, 又有人说是busybox镜像的问题，从1.28.4以后的镜像都存在这问题。把镜像换成1.28.4试试? 详见 https://github.com/kubernetes/dns/issues/109
