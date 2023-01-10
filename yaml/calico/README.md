@@ -19,9 +19,15 @@ calico存储方式有两种： "datastore_type": "kubernetes"  和 etcd.  <br>
 
 ## kubernetes的方式，注意修改几个地方，才能正常运行：
 
+```shell
+1. `CALICO_IPV4POOL_CIDR： pod的网段，改成自己的. `
+2. `"kubeconfig": "__KUBECONFIG_FILEPATH__"： 改成自己主机上实际的路径. 如： "kubeconfig": "/etc/cni/net.d/calico-kubeconfig"  `
+3. `在名为`calico-config`的`ConfigMap`中，将`etcd_endpoints`的值设置为etcd服务器的IP地址和端口。`
+    如需要ssl访问：etcd_endpoints: "https://192.168.10.73:2379,https://192.168.10.74:2379,https://192.168.10.77:2379"
+    不需要ssl访问：etcd_endpoints: "http://192.168.10.73:2379
+```
 
-`CALICO_IPV4POOL_CIDR： pod的网段，改成自己的. `  <br>
-`"kubeconfig": "__KUBECONFIG_FILEPATH__"： 改成自己主机上实际的路径. 如： "kubeconfig": "/etc/cni/net.d/calico-kubeconfig"  `
+
 
 由于calico是自动检查主机的IP地址的，它不能正确识别那个是主机的出口网卡，可以采用下面的方式来直接指定。<br>
 
