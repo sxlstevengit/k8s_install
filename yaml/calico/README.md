@@ -23,8 +23,11 @@ calico存储方式有两种： "datastore_type": "kubernetes"  和 etcd.  <br>
 1. `CALICO_IPV4POOL_CIDR： pod的网段，改成自己的. `
 2. `"kubeconfig": "__KUBECONFIG_FILEPATH__"： 改成自己主机上实际的路径. 如： "kubeconfig": "/etc/cni/net.d/calico-kubeconfig"  `
 3. `在名为`calico-config`的`ConfigMap`中，将`etcd_endpoints`的值设置为etcd服务器的IP地址和端口。`
-    如需要ssl访问：etcd_endpoints: "https://192.168.10.73:2379,https://192.168.10.74:2379,https://192.168.10.77:2379"
-    不需要ssl访问：etcd_endpoints: "http://192.168.10.73:2379
+    3.1 如需要ssl访问：etcd_endpoints: "https://192.168.10.73:2379,https://192.168.10.74:2379,https://192.168.10.77:2379"
+        还需要修改两个地方，后面etcd方式中有详细介绍。
+        第一： Secret中的etcd-key、etcd-cert、etcd-ca; 默认是注释的，需要去掉注释，填写相应的证书base64编码
+        第二： calico-config中 etcd_ca、etcd_cert、etcd_key。 默认是空，需要填写成其后注释掉的内容即可。                
+    3.2 不需要ssl访问：etcd_endpoints: "http://192.168.10.73:2379"， 也不需要修改3.1中所列的两个地方。
 ```
 
 
